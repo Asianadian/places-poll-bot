@@ -1,5 +1,5 @@
-from discord.ext import commands
 from base.formatted_logger import get_formatted_logger
+from discord.ext import commands
 
 class BaseCog(commands.Cog):
   logging = get_formatted_logger()

@@ -1,12 +1,18 @@
 import discord
-import requests
 import json
+import requests
 
 from cogs.base_cog import BaseCog
 from discord.ext import commands
 
-def format_text(text):
-     return text if len(text) <= 55 else text[:52] + '...'
+def format_poll_option(text):
+  return (text if len(text) <= 55 else text[:52] + '...')
+
+def format_embed_name(i, place):
+  return f"{i+1}. {place['displayName']['text']} ({float(place['rating']):.1f})"
+
+def format_embed_value(place):
+  return f"{place['editorialSummary']['text']}\n[More...]({place['googleMapsUri']})"
 
 class Poll(BaseCog):
   def __init__(self, bot):
@@ -22,7 +28,7 @@ class Poll(BaseCog):
     headers = {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': self.bot.places_key,
-        'X-Goog-FieldMask': 'places.displayName,places.googleMapsUri'
+        'X-Goog-FieldMask': 'places.displayName,places.googleMapsUri,places.rating,places.editorialSummary'
     }
 
     data = {
@@ -32,17 +38,13 @@ class Poll(BaseCog):
 
     response = requests.post(url, headers=headers, json=data)
 
-    if response.status_code == 200:
-        print(response.json())
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
     return json.loads(response.text)
   
   async def show_links(self, ctx, places):
     embedVar = discord.Embed(title='Top Results:', color=0x00ff00)
     
     for i, place in enumerate(places):
-      embedVar.add_field(name=f"{i+1}. {place['displayName']['text']}", value=f"[link]({place['googleMapsUri']})", inline=False)
+      embedVar.add_field(name=format_embed_name(i, place), value=format_embed_value(place), inline=False)
 
     await ctx.send(embed=embedVar)
   
@@ -62,7 +64,7 @@ class Poll(BaseCog):
          'answers': [
             {
                'answer_id': index+1,
-               'poll_media': {'text': format_text(place['displayName']['text'])}
+               'poll_media': {'text': format_poll_option(place['displayName']['text'])}
             }
             for index, place in enumerate(places)
           ]
@@ -70,11 +72,7 @@ class Poll(BaseCog):
     }
 
     response = requests.post(url, headers=headers, json=data)
-
-    if response.status_code == 200:
-        print(response.json())
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
+    
     return json.loads(response.text)
 
   @commands.command(name='poll')

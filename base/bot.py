@@ -2,9 +2,10 @@ import asyncio
 import discord
 import os
 
+from base.formatted_logger import get_formatted_logger
 from database import Database
 from discord.ext import commands
-from base.formatted_logger import get_formatted_logger
+
 
 class PPBot(commands.Bot):
   logging = get_formatted_logger()
