@@ -2,7 +2,7 @@
  Ask for places to visit and PPBot will send relevant results and a corresponding poll right to your server! <br />
  Built using Google Places API (New), Discord API and discord.py.
 
-## Running Bot
+## Running
  If you'd like to run the bot yourself, create a .env using the sample.env file. <br />
  Fill in the values for `DISCORD_TOKEN` and `PLACES_KEY`.
 
